@@ -1,0 +1,6 @@
+.env
+node_modules/
+google_json_key/gen-lang-client-0553672861-6cb35e7ba7c7.json
+
+uploads/*
+!uploads/.gitignore

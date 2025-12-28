@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Notes</title>
+    <style>
+        #notesOutlineAndSentence {
+            height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+            /* hidden by default */
+        }
+
+        .cornell-container {
+            max-width: 900px;
+            margin: 1rem auto;
+            border: 1px solid #ccc;
+            font-family: system-ui, sans-serif;
+            display: none;
+            /* hidden by default */
+        }
+
+        .cornell-header {
+            padding: 1rem;
+            border-bottom: 2px solid #000;
+        }
+
+        .cornell-body {
+            display: grid;
+            grid-template-columns: 30% 70%;
+            min-height: 300px;
+        }
+
+        .cornell-cues {
+            padding: 1rem;
+            border-right: 2px solid #000;
+            background: #f9f9f9;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .cornell-notes {
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .cornell-summary {
+            padding: 1rem;
+            border-top: 2px solid #000;
+            background: #fafafa;
+        }
+
+        .main-container form {
+            /*style the form*/
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .main-container form button {
+            margin-left: 1rem;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .main-container h1 {
+            /*important styles for the main heading*/
+            margin-bottom: 0;
+            font-family: system-ui, sans-serif;
+            font-weight: bold;
+            font-size: 2.5rem;
+            line-height: 1.2;
+            color: #333;
+            overflow-wrap: break-word;
+            user-select: none;
+        }
+
+        .main-container p {
+            margin-top: 0.5rem;
+            font-family: system-ui, sans-serif;
+            font-size: 1.2rem;
+            color: #666;
+            overflow-wrap: break-word;
+            user-select: none;
+        }
+
+        .main-container form input[type="file"] {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+
+        }
+
+        .main-container form label {
+            font-family: system-ui, sans-serif;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .main-container form select {
+            font-size: 1rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .main-container form select option {
+            font-size: 1rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .forms-container {
+            /*align the buttons*/
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .lds-roller,
+        .lds-roller div,
+        .lds-roller div:after {
+            box-sizing: border-box;
+        }
+
+        .lds-roller {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .lds-roller div {
+            animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            transform-origin: 40px 40px;
+        }
+
+        .lds-roller div:after {
+            content: " ";
+            display: block;
+            position: absolute;
+            width: 7.2px;
+            height: 7.2px;
+            border-radius: 50%;
+            background: currentColor;
+            margin: -3.6px 0 0 -3.6px;
+        }
+
+        .lds-roller div:nth-child(1) {
+            animation-delay: -0.036s;
+        }
+
+        .lds-roller div:nth-child(1):after {
+            top: 62.62742px;
+            left: 62.62742px;
+        }
+
+        .lds-roller div:nth-child(2) {
+            animation-delay: -0.072s;
+        }
+
+        .lds-roller div:nth-child(2):after {
+            top: 67.71281px;
+            left: 56px;
+        }
+
+        .lds-roller div:nth-child(3) {
+            animation-delay: -0.108s;
+        }
+
+        .lds-roller div:nth-child(3):after {
+            top: 70.90963px;
+            left: 48.28221px;
+        }
+
+        .lds-roller div:nth-child(4) {
+            animation-delay: -0.144s;
+        }
+
+        .lds-roller div:nth-child(4):after {
+            top: 72px;
+            left: 40px;
+        }
+
+        .lds-roller div:nth-child(5) {
+            animation-delay: -0.18s;
+        }
+
+        .lds-roller div:nth-child(5):after {
+            top: 70.90963px;
+            left: 31.71779px;
+        }
+
+        .lds-roller div:nth-child(6) {
+            animation-delay: -0.216s;
+        }
+
+        .lds-roller div:nth-child(6):after {
+            top: 67.71281px;
+            left: 24px;
+        }
+
+        .lds-roller div:nth-child(7) {
+            animation-delay: -0.252s;
+        }
+
+        .lds-roller div:nth-child(7):after {
+            top: 62.62742px;
+            left: 17.37258px;
+        }
+
+        .lds-roller div:nth-child(8) {
+            animation-delay: -0.288s;
+        }
+
+        .lds-roller div:nth-child(8):after {
+            top: 56px;
+            left: 12.28719px;
+        }
+
+        @keyframes lds-roller {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert {
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.6s;
+            margin-bottom: 15px;
+        }
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        closebtn:hover {
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <h1>AI, Noted</h1>
+        <p>Upload a WAV audio file to transcribe and generate notes in various formats.</p>
+        <div class="forms-container">
+            <form action="/transcribe" method="post" enctype="multipart/form-data" id="transcriptionForm">
+                <input type="file" name="audio" accept=".wav" />
+                <button type="submit">Transcribe</button>
+            </form>            
+
+            <form action="/setNotesFormat" method="post" id="notesFormatForm" style = "display: none;">
+                <label for="format">Select Notes Format:</label>
+                <select id="format" name="format">
+                    <option value="cornell">Cornell Method</option>
+                    <option value="outline">Outline Method</option>
+                    <option value="mindmap">Mind Map</option>
+                    <option value="charting">Charting Method</option>
+                    <option value="sentence">Sentence Method</option>
+                </select>
+                <label for="slider">Detail Level:</label>
+                <input type="range" id="slider" name="slider" min="0" max="100" value="50" style="margin-left:1rem;">
+                <label for="context">Include the purpose of these notes:</label>
+                <input type="text" id="context"></input>
+                <button type="submit">Set Format</button>
+            </form>
+
+        </div>
+    </div>
+    <div class="lds-roller" style="display: none;" id="loadingSpinner">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+    <div class="alert" style="display:none;" id="transcriptionCompleteAlert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        Transcription complete! You can now select a notes format.
+    </div>
+    <div class="alert" style="display:none;" id="notesFormatAlert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        Notes format generated! Check below for your notes.
+    </div>
+
+    <section id="notesOutlineAndSentence">
+        <h2 id="header">
+            <pre id="notesOutput"></pre>
+        </h2>
+    </section>
+
+    <section class="cornell-container">
+        <header class="cornell-header">
+            <h2 id="cornell-header"></h2>
+        </header>
+        <div class="cornell-body">
+            <aside class="cornell-cues">
+                <h3>Cues</h3>
+                <div id="cornell-cues"></div>
+            </aside>
+            <main class="cornell-notes">
+                <h3>Notes</h3>
+                <div id="cornell-notes"></div>
+            </main>
+        </div>
+        <footer class="cornell-summary">
+            <h3>Summary</h3>
+            <div id="cornell-summary"></div>
+        </footer>
+    </section>
+
+    <section class="mindmap-container">
+        <!-- Mind map will be rendered here -->
+        <svg id="mindmapSvg" width="800" height="600">
+            <g id="mindmapGroup"></g>
+        </svg>
+
+    </section>
+
+    <section class="charting-container">
+        <!-- Chart will be rendered here -->
+        <table id="chartingTable" border="1">
+            <!-- Dynamic content will be inserted here -->
+        </table>
+    </section>
+
+    <script>
+        let output = "";
+        const transcriptionForm = document.getElementById('transcriptionForm');
+        const notesFormatForm = document.getElementById('notesFormatForm');
+        const cornellSection = document.querySelector(".cornell-container");
+        const loadingSpinner = document.getElementById("loadingSpinner");
+
+        // Transcription form
+        transcriptionForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(transcriptionForm);
+            loadingSpinner.style.display = "inline-block";
+
+            const response = await fetch('/transcribe', {
+                method: 'POST',
+                body: formData
+            });
+            output = await response.json();
+            loadingSpinner.style.display = "none";
+            //make the user know the transcription is complete, without alert()
+            const alertBox = document.getElementById("transcriptionCompleteAlert");
+            alertBox.style.display = "block";
+            
+            var close = document.getElementsByClassName("closebtn");
+            var i;
+
+            for (i = 0; i < close.length; i++) {
+                close[i].onclick = function () {
+                    var div = this.parentElement;
+                    div.style.opacity = "0";
+                    setTimeout(function () { div.style.display = "none"; }, 600);
+                }
+            }
+            transcriptionForm.style.display = "none";
+            notesFormatForm.style.display = "inline-block";
+
+
+
+            console.log("Transcription:", output);
+        };
+
+        // Notes format form
+        notesFormatForm.onsubmit = async (e) => {
+            e.preventDefault();
+
+
+            if (!output.transcription) {
+                alert("Please transcribe audio first.");
+                return;
+            }
+
+            const formData = new FormData();
+            const format = document.getElementById("format").value;
+            const detailLevel = document.getElementById("slider").value;
+            const context = document.getElementById("context").value;
+            formData.append("format", format);
+            formData.append("transcription", output.transcription);
+            formData.append("detailLevel", detailLevel);
+            formData.append("context", context);
+            
+            loadingSpinner.style.display = "inline-block";
+            const response = await fetch('/setNotesFormat', {
+                method: 'POST',
+                body: formData
+            });
+
+
+            const notesOutput = await response.json();
+            console.log("Notes received:", notesOutput.notes);
+            loadingSpinner.style.display = "none";
+            const alertBox = document.getElefmentById("notesFormatAlert");
+            alertBox.style.display = "block";
+            var close = document.getElementsByClassName("closebtn");
+            var i;
+            for (i = 0; i < close.length; i++) {
+                close[i].onclick = function () {
+                    var div = this.parentElement;
+                    div.style.opacity = "0";
+                    setTimeout(function () { div.style.display = "none"; }, 600);
+                }
+            }
+            
+            // Render based on selected format
+            if (format === "mindmap") {
+                document.querySelector(".mindmap-container").style.display = "block";
+                const svg = document.getElementById("mindmapSvg");
+                const group = document.getElementById("mindmapGroup");
+                group.innerHTML = "";
+                const root = notesOutput.notes.topics[0];
+
+                drawNode(group, root, svg.clientWidth / 2, svg.clientHeight / 2, 180, 0, 360, 0, 7, 0.5, getNextColor());
+
+                resizeSvg(group, svg);
+                document.getElementById("notesOutlineAndSentence").style.display = "none";
+                cornellSection.style.display = "none";
+
+
+            } else if (format === "charting") {
+                document.querySelector(".charting-container").style.display = "block";
+                const table = document.getElementById("chartingTable");
+                table.innerHTML = ""; // Clear previous content
+                const notesArray = JSON.parse(notesOutput.notes);
+                //add the headers
+                if (notesArray.length > 0) {
+                    const headerRow = document.createElement("tr");
+                    notesArray[0].forEach(header => {
+                        const th = document.createElement("th");
+                        //style the header
+                        th.setAttribute("style", "background-color: #f2f2f2; padding: 8px; text-align: left; font-weight: bold;");
+                        th.innerText = header;
+                        headerRow.appendChild(th);
+                    });
+                    table.appendChild(headerRow);
+                }
+                //add the data rows
+                for (let i = 1; i < notesArray.length; i++) {
+                    const row = document.createElement("tr");
+
+                    notesArray[i].forEach(cellData => {
+                        const td = document.createElement("td");
+                        td.innerText = cellData;
+                        row.appendChild(td);
+                    });
+
+                    table.appendChild(row);
+                }
+                document.getElementById("notesOutlineAndSentence").style.display = "none";
+                cornellSection.style.display = "none";
+                document.querySelector(".mindmap-container").style.display = "none";
+
+            } else if (format === "outline") {
+                document.getElementById("notesOutlineAndSentence").style.display = "block";
+                document.getElementById("notesOutput").innerText = notesOutput.notes;
+                cornellSection.style.display = "none";
+                document.querySelector(".mindmap-container").style.display = "none";
+                document.querySelector(".charting-container").style.display = "none";
+            } else if (format === "cornell") {
+                cornellSection.style.display = "block";
+
+                // Render Cornell notes with line breaks
+                document.querySelector("#cornell-header").innerText = notesOutput.notes.header || "";
+                document.querySelector("#cornell-cues").innerHTML = (notesOutput.notes.cues || "").replace(/\n/g, "<br>");
+                document.querySelector("#cornell-notes").innerHTML = (notesOutput.notes.notes || "").replace(/\n/g, "<br>");
+                document.querySelector("#cornell-summary").innerHTML = (notesOutput.notes.summary || "").replace(/\n/g, "<br>");
+                document.getElementById("notesOutlineAndSentence").style.display = "none";
+                document.querySelector(".mindmap-container").style.display = "none";
+                document.querySelector(".charting-container").style.display = "none";
+
+            } else if (format === "sentence") {
+                document.getElementById("notesOutlineAndSentence").style.display = "block";
+                document.getElementById("notesOutput").innerText = notesOutput.notes;
+                cornellSection.style.display = "none";
+            }
+        }
+        const colors = [
+            "#4CAF50", "#2196F3", "#FF9800",
+            "#9C27B0", "#E91E63", "#00BCD4",
+            "#8BC34A", "#FF5722"
+        ];
+        let colorIndex = 0;
+        function getNextColor() {
+            return colors[(colorIndex++) % colors.length];
+        }
+        function drawNode(svg, node, centerX, centerY, distance, startAngle, endAngle, depth = 0, lineThickness = 2, lineDecay = 2, branchColor) {
+            const svgNS = "http://www.w3.org/2000/svg";
+
+            // ---- TEXT ----
+            const text = document.createElementNS(svgNS, "text");
+            text.setAttribute("x", centerX);
+            text.setAttribute("y", centerY);
+            text.setAttribute("dominant-baseline", "middle");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("font-size", "12");
+            text.textContent = node.title;
+            svg.appendChild(text);
+
+            const box = text.getBBox();
+            const padding = 6;
+
+            const rect = document.createElementNS(svgNS, "rect");
+            rect.setAttribute("x", centerX - box.width / 2 - padding);
+            rect.setAttribute("y", centerY - box.height / 2 - padding);
+            rect.setAttribute("width", box.width + padding * 2);
+            rect.setAttribute("height", box.height + padding * 2);
+            rect.setAttribute("rx", 6);
+            rect.setAttribute("ry", 6);
+            rect.setAttribute("fill", branchColor);
+            svg.insertBefore(rect, text);
+
+            const children = node.children || [];
+            if (!children.length) return;
+
+            const angleSpread = 110;
+            const angleStep = angleSpread / children.length;
+            const baseAngle = -angleSpread / 2;
+
+            const nextDistance = distance + 220 + depth * 80;
+
+            children.forEach((child, i) => {
+                const angle = baseAngle + i * angleStep + angleStep / 2;
+                const rad = angle * Math.PI / 180;
+
+                const childX = centerX + nextDistance * Math.cos(rad);
+                const childY = centerY + nextDistance * Math.sin(rad);
+
+                const line = document.createElementNS(svgNS, "line");
+                line.setAttribute("x1", centerX);
+                line.setAttribute("y1", centerY);
+                line.setAttribute("x2", childX);
+                line.setAttribute("y2", childY);
+                line.setAttribute("stroke", branchColor);
+                line.setAttribute("stroke-width", Math.max(1, lineThickness - lineDecay * depth));
+                svg.insertBefore(line, rect);
+                let childBranchColor = getNextColor();
+
+                drawNode(
+                    svg,
+                    child,
+                    childX,
+                    childY,
+                    nextDistance,
+                    angle - angleStep / 2,
+                    angle + angleStep / 2,
+                    depth + 1,
+                    Math.max(1, lineThickness - lineDecay),
+                    lineDecay,
+                    childBranchColor
+                );
+            });
+        }
+
+        function resizeSvg(group, svg) {
+            const bbox = group.getBBox();
+            if (!bbox.width || !bbox.height) return;
+            const padding = 20;
+            svg.setAttribute("width", bbox.width + padding * 2);
+            svg.setAttribute("height", bbox.height + padding * 2);
+            svg.setAttribute("viewBox", `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`);
+        }
+
+    </script>
+</body>
+
+</html>
