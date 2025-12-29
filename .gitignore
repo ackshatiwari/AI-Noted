@@ -4,3 +4,6 @@ google_json_key/gen-lang-client-0553672861-6cb35e7ba7c7.json
 
 uploads/*
 !uploads/.gitignore
+
+google_json_key/*
+!google_json_key/.gitignore
