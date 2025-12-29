@@ -14,6 +14,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 const BUCKET_NAME = 'audio-bucket-080211';
 
 const storage = new Storage({
@@ -62,6 +63,12 @@ const server = http.createServer((req, res) => {
             uploadDir: path.join(__dirname, 'uploads'),
             keepExtensions: true
         });
+
+        if (!fs.existsSync(path.join(__dirname, 'uploads'))) {
+            fs.mkdirSync(path.join(__dirname, 'uploads'), { recursive: true });
+        }
+
+
 
         form.parse(req, async (err, fields, files) => {
             if (err) {

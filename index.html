@@ -282,9 +282,9 @@
             <form action="/transcribe" method="post" enctype="multipart/form-data" id="transcriptionForm">
                 <input type="file" name="audio" accept=".wav" />
                 <button type="submit">Transcribe</button>
-            </form>            
+            </form>
 
-            <form action="/setNotesFormat" method="post" id="notesFormatForm" style = "display: none;">
+            <form action="/setNotesFormat" method="post" id="notesFormatForm" style="display: none;">
                 <label for="format">Select Notes Format:</label>
                 <select id="format" name="format">
                     <option value="cornell">Cornell Method</option>
@@ -303,15 +303,15 @@
         </div>
     </div>
     <div class="lds-roller" style="display: none;" id="loadingSpinner">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
     <div class="alert" style="display:none;" id="transcriptionCompleteAlert">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
         Transcription complete! You can now select a notes format.
@@ -325,9 +325,11 @@
         <h2 id="header">
             <pre id="notesOutput"></pre>
         </h2>
+        <button id="downloadPdfButtonOutlineSentence">Download as PDF</button>
     </section>
 
     <section class="cornell-container">
+        <button id="downloadPdfButtonCornell">Download as PDF</button>
         <header class="cornell-header">
             <h2 id="cornell-header"></h2>
         </header>
@@ -349,6 +351,8 @@
 
     <section class="mindmap-container">
         <!-- Mind map will be rendered here -->
+        <button id="downloadPdfButtonMindmap">Download as PDF</button>
+
         <svg id="mindmapSvg" width="800" height="600">
             <g id="mindmapGroup"></g>
         </svg>
@@ -356,12 +360,15 @@
     </section>
 
     <section class="charting-container">
+        <button id="downloadPdfButtonCharting">Download as PDF</button>
         <!-- Chart will be rendered here -->
         <table id="chartingTable" border="1">
             <!-- Dynamic content will be inserted here -->
         </table>
     </section>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         let output = "";
         const transcriptionForm = document.getElementById('transcriptionForm');
@@ -384,7 +391,7 @@
             //make the user know the transcription is complete, without alert()
             const alertBox = document.getElementById("transcriptionCompleteAlert");
             alertBox.style.display = "block";
-            
+
             var close = document.getElementsByClassName("closebtn");
             var i;
 
@@ -421,7 +428,7 @@
             formData.append("transcription", output.transcription);
             formData.append("detailLevel", detailLevel);
             formData.append("context", context);
-            
+
             loadingSpinner.style.display = "inline-block";
             const response = await fetch('/setNotesFormat', {
                 method: 'POST',
@@ -432,7 +439,7 @@
             const notesOutput = await response.json();
             console.log("Notes received:", notesOutput.notes);
             loadingSpinner.style.display = "none";
-            const alertBox = document.getElefmentById("notesFormatAlert");
+            const alertBox = document.getElementById("notesFormatAlert");
             alertBox.style.display = "block";
             var close = document.getElementsByClassName("closebtn");
             var i;
@@ -443,7 +450,7 @@
                     setTimeout(function () { div.style.display = "none"; }, 600);
                 }
             }
-            
+
             // Render based on selected format
             if (format === "mindmap") {
                 document.querySelector(".mindmap-container").style.display = "block";
@@ -600,6 +607,148 @@
             svg.setAttribute("width", bbox.width + padding * 2);
             svg.setAttribute("height", bbox.height + padding * 2);
             svg.setAttribute("viewBox", `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`);
+        }
+        document.getElementById("downloadPdfButtonOutlineSentence").addEventListener('click', async function () {
+            await downloadPdf("downloadPdfButtonOutlineSentence");
+        });
+        document.getElementById("downloadPdfButtonCornell").addEventListener('click', async function () {
+            await downloadPdf("downloadPdfButtonCornell");
+        });
+        document.getElementById("downloadPdfButtonMindmap").addEventListener('click', async function () {
+            await downloadPdf("downloadPdfButtonMindmap");
+        });
+        document.getElementById("downloadPdfButtonCharting").addEventListener('click', async function () {
+            await downloadPdf("downloadPdfButtonCharting");
+        });
+
+
+        async function downloadPdf(buttonId) {
+            console.log("Download PDF button clicked:", buttonId);
+            const { jsPDF } = window.jspdf;
+            let element;
+            let originalStyles = {};
+            if (buttonId === "downloadPdfButtonOutlineSentence") {
+                element = document.getElementById("notesOutlineAndSentence");
+                originalStyles = {
+                    height: element.style.height,
+                    maxHeight: element.style.maxHeight,
+                    overflow: element.style.overflow
+                };
+                element.style.height = "auto";
+                element.style.maxHeight = "none";
+                element.style.overflow = "visible";
+
+            } else if (buttonId === "downloadPdfButtonCornell") {
+                element = document.querySelector(".cornell-container");
+                const cues = document.querySelector('.cornell-cues');
+                const notes = document.querySelector('.cornell-notes');
+                const summary = document.querySelector('.cornell-summary');
+
+                originalStyles = {
+                    cues: { maxHeight: cues.style.maxHeight, overflow: cues.style.overflow },
+                    notes: { maxHeight: notes.style.maxHeight, overflow: notes.style.overflow },
+                    summary: { maxHeight: summary.style.maxHeight, overflow: summary.style.overflow }
+                };
+
+                // Expand to full content
+                cues.style.maxHeight = "none";
+                cues.style.overflow = "visible";
+                notes.style.maxHeight = "none";
+                notes.style.overflow = "visible";
+                summary.style.maxHeight = "none";
+                summary.style.overflow = "visible";
+            } else if (buttonId === "downloadPdfButtonMindmap") {
+                element = document.querySelector(".mindmap-container");
+                const svg = document.getElementById("mindmapSvg");
+                //temporarily expand svg to full size
+                originalStyles = {
+                    width: svg.style.width,
+                    height: svg.style.height,
+                    overflow: svg.style.overflow
+                };
+                const group = document.getElementById("mindmapGroup");
+                const bbox = group.getBBox();
+                const padding = 20;
+                svg.style.width = (bbox.width + padding) + "px";
+                svg.style.height = (bbox.height + padding) + "px";
+                svg.style.overflow = "visible";
+
+                svg.setAttribute("viewBox", `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`);
+
+
+
+            } else if (buttonId === "downloadPdfButtonCharting") {
+                element = document.querySelector(".charting-container");
+                originalStyles = {
+                    width: element.style.width,
+                    height: element.style.height,
+                    overflow: element.style.overflow
+                };
+                element.style.width = "auto";
+                element.style.height = "auto";
+                element.style.overflow = "visible";
+            } else {
+                console.error("Unknown button ID:", buttonId);
+                return;
+            }
+
+
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            let heightLeft = pdfHeight;
+            let position = 0;
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            //add the first page
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pageHeight;
+
+            //add extra pages if needed
+            while (heightLeft > 0) {
+                position = heightLeft - pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save('notes.pdf');
+
+            // Restore original styles
+            if (buttonId === "downloadPdfButtonOutlineSentence") {
+                element.style.height = originalStyles.height;
+                element.style.maxHeight = originalStyles.maxHeight;
+                element.style.overflow = originalStyles.overflow;
+            } else if (buttonId === "downloadPdfButtonCornell") {
+                const cues = document.querySelector('.cornell-cues');
+                const notes = document.querySelector('.cornell-notes');
+                const summary = document.querySelector('.cornell-summary');
+
+                cues.style.maxHeight = originalStyles.cues.maxHeight;
+                cues.style.overflow = originalStyles.cues.overflow;
+                notes.style.maxHeight = originalStyles.notes.maxHeight;
+                notes.style.overflow = originalStyles.notes.overflow;
+                summary.style.maxHeight = originalStyles.summary.maxHeight;
+                summary.style.overflow = originalStyles.summary.overflow;
+            } else if (buttonId === "downloadPdfButtonMindmap") {
+                const svg = document.getElementById("mindmapSvg");
+                svg.style.width = originalStyles.width;
+                svg.style.height = originalStyles.height;
+                svg.style.overflow = originalStyles.overflow;
+            }
+            
+
+
+
+
+
+
+
+
         }
 
     </script>
