@@ -464,6 +464,7 @@
                 resizeSvg(group, svg);
                 document.getElementById("notesOutlineAndSentence").style.display = "none";
                 cornellSection.style.display = "none";
+                document.querySelector(".charting-container").style.display = "none";
 
 
             } else if (format === "charting") {
@@ -521,6 +522,8 @@
                 document.getElementById("notesOutlineAndSentence").style.display = "block";
                 document.getElementById("notesOutput").innerText = notesOutput.notes;
                 cornellSection.style.display = "none";
+                document.querySelector(".mindmap-container").style.display = "none";
+                document.querySelector(".charting-container").style.display = "none";
             }
         }
         const colors = [

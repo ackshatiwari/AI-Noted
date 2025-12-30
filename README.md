@@ -36,6 +36,6 @@ Here are the steps in order to run this app on your local machine.
 ```
 # Replace the alues with your real JSON key path, and your own Gemini key
 GOOGLE_JSON_KEY_PATH=google_json_key\gen-lang-client-0553672861-6cb35e7ba7c7.json 
-GOOGLE_GEMINI_KEY=AIzaSyCk91-4GhZ6SRnjZ5op-Yq9eWAXOAvxciA
+GOOGLE_GEMINI_KEY=AiZA.......
 ```
 5. Enter the command, ```npm run dev``` to run the project
