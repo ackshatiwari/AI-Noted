@@ -34,7 +34,7 @@ Here are the steps in order to run this app on your local machine.
 4. Create a Gemini API key, and for the STT API, create a JSON key, and save it to the ```google_json_key``` folder
 5. Create an ```.env``` file, and add the following lines:
 ```
-# Replace the alues with your real JSON key path, and your own Gemini key
+# Replace the values with your real JSON key path, and your own Gemini key
 GOOGLE_JSON_KEY_PATH=google_json_key\gen-lang-client-0553672861-6cb35e7ba7c7.json 
 GOOGLE_GEMINI_KEY=AiZA.......
 ```
