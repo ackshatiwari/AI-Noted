@@ -3,7 +3,7 @@
 ## Table  of Contents
 1. Introduction
 2. Features
-3. WHat's next
+3. What's next
 4. How to set up
 
 ## Introduction
@@ -16,7 +16,7 @@ AI, Noted has several feature that can help make the AI-generated notes more per
 - A slider indicating the depth of the notes
 - Input box where the user can specify the context and purpose of the notes, allowing more personalized notes
 - Five different note formats, which are the Outline Method, the Sentence Method, the Charting Method, the Mind Map Method, and the Cornell method of note-taking.
-- Download the notes for future reference
+- Downloadable notes for future reference
 
 ## What's Next
 Although this program is complete, there are still some extra features that I will add to the project as the time progresses:
