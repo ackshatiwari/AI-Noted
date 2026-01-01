@@ -149,7 +149,6 @@ const server = http.createServer((req, res) => {
                 : fields.context;
 
             console.log(transcription);
-
             console.log(`Notes format set to: ${format}`);
             console.log(`Transcription is : ${transcription.substring(0, 30)}...`);
             if (format && transcription && detailLevel && context !== undefined) {
